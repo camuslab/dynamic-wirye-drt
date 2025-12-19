@@ -8,16 +8,9 @@ ENV/
 
 # Jupyter
 .ipynb_checkpoints/
-*/.ipynb_checkpoints/*
-
-# Data (default: ignore all)
-data/*
-
-# Allow processed folder but ignore its contents by default
-!data/processed/
-data/processed/*
-
-# Allow only ONE specific parquet
+# Data
+data/**/*.parquet
+data/**/*.csv
 !data/processed/240307_wirye_od.parquet
 
 # Project outputs
