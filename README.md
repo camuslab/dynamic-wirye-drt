@@ -86,4 +86,4 @@
 - **데이터 경로**: Parquet 파일이 `data/processed/` 폴더 내에 존재하는지 확인하세요.
 
 ---
-© 2024 Dynamic Wirye DRT Project.
+© 2025 Dynamic Wirye DRT Project.
