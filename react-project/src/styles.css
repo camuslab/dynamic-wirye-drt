@@ -1,0 +1,30 @@
+/* src/styles.css */
+html, body, #root { height: 100%; margin: 0; background:#0b0f14; color:#eee; font-family: ui-sans-serif, system-ui; }
+
+.time-banner {
+  position: fixed; top: 12px; left: 0; right: 0; text-align: center;
+  font-weight: 700; letter-spacing: 1px; font-size: 18px; pointer-events:none;
+}
+
+.bottom-bar {
+  position: fixed; left: 0; right: 0; bottom: 0; display: flex; align-items: center; gap: 8px;
+  padding: 8px 12px; background: rgba(10,14,18,0.65); backdrop-filter: blur(6px);
+}
+.bottom-bar input[type="range"] { width: 100%; }
+
+.panel {
+  position: fixed; right: 14px; top: 14px; width: 260px; background: rgba(14,18,24,0.75); padding: 12px;
+  border-radius: 10px; line-height: 1.4; font-size: 13px; box-shadow: 0 6px 20px rgba(0,0,0,0.35);
+}
+
+.legend {
+  position: fixed; right: 14px; bottom: 70px; width: 220px; background: rgba(14,18,24,0.75);
+  padding: 10px; border-radius: 10px; font-size: 13px;
+}
+
+.play-btn { cursor: pointer; padding: 6px 10px; border-radius: 8px; border: 1px solid #2b2f36; background:#0f141a; color:#eee; }
+.play-btn:hover { background:#151b22; }
+
+.tag { display:inline-block; width:10px; height:10px; border-radius:50%; margin-right:6px; }
+.tag-pick { background:#2ecc71; }
+.tag-drop { background:#a66bff; }
