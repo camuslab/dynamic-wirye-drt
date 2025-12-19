@@ -20,7 +20,6 @@ results/
 # React build artifacts (redundant safety)
 react-project/node_modules/
 react-project/dist/
-react-project/public/data/
 
 # OS
 .DS_Store
