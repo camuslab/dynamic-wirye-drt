@@ -8,7 +8,7 @@ import Map from "react-map-gl";
 import Legend from "./legend";
 
 const MAPBOX_TOKEN =
-  "pk.eyJ1IjoieW91cmNpbmR5IiwiYSI6ImNsdWpjOGQwNDA4ZnkyaXFwZWtiZnAybjEifQ.KdbpGwPgG_koJ-asO9VdpA";
+  "your_token_here"; // 토큰을 입력해주세요
 
 const INITIAL_VIEW_STATE = {
   longitude: 127.135,
