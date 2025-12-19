@@ -14,12 +14,11 @@ data/**/*.csv
 !data/processed/240307_wirye_od.parquet
 
 # Project outputs
-outputs/
 results/
 
-# React build artifacts (redundant safety)
-react-project/node_modules/
-react-project/dist/
+# Visualization build artifacts
+visualization/node_modules/
+visualization/dist/
 
 # OS
 .DS_Store

@@ -58,7 +58,7 @@ class ServiceParams:
 # =========================
 INPUT_PATH: str = "data/processed/240307_wirye_od.parquet"
 
-RUN_TAG: str = "40대(nonkey1)"            # 시나리오 명칭
+RUN_TAG: str = "40대"            # 시나리오 명칭
 
 def _out(p: str) -> str:
     return f"outputs/{RUN_TAG}/{p}"

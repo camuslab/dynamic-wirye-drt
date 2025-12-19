@@ -26,7 +26,7 @@
 - `data/`: 입력 데이터 (Parquet 형식)
 - `outputs/`: 시뮬레이션 결과물 (`summary`, `events`, `tracks` 등)
 - `결과분석/`: 시나리오별 성능 비교 및 분석용 노트북 폴더
-- `react-project/`: Deck.gl 기반 시각화 프런트엔드
+- `visualization/`: Deck.gl 기반 시각화 프런트엔드
 
 ---
 
@@ -50,14 +50,14 @@
 3. `outputs/<RUN_TAG>/` 폴더에 결과 코드가 생성됩니다.
 
 ### 3. 데이터 전처리 (Visualization 준비)
-- `module/make_viz_json.ipynb` 노트북을 실행하여 `outputs/`의 결과물을 `react-project/public/data/`로 변환/복사합니다.
+- `module/make_viz_json.ipynb` 노트북을 실행하여 `outputs/`의 결과물을 `visualization/public/data/`로 변환/복사합니다.
 - 이 과정에서 `trip.json`, `pax_icon.json` 등이 생성됩니다.
 
 ### 4. 시각화 대시보드 (Frontend)
 - **요구사항**: Node.js 18+
 - **실행**:
   ```bash
-  cd react-project
+  cd visualization
   npm install
   npm run dev
   ```
