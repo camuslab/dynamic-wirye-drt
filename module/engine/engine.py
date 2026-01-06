@@ -5,6 +5,7 @@
 - 스케줄 무결성 검사(기존 탑승자 drop 미손실, 신규 pick/drop 쌍 보장)
 - 드롭 ETA 데드라인: t_end + tail_flush_max_sec (sec 우선, 없으면 구버전 batch방식 환산)
 - 리액티브 리밸런싱: '핫' 요청 우선, 유휴차량과 최근접 매칭(외부 모듈 있으면 우선 사용)
+- 드리프트 금지 제거: 각 요청은 자신의 허용지연 범위만 준수
 """
 
 from __future__ import annotations
@@ -20,7 +21,7 @@ from ..dispatch.assignment import solve_lap
 from ..routing.osrm_client import OSRM
 from ..utils.utils import segment_times
 
-ENGINE_PATCH_TAG = "drop-deadline+strict-apply+abs-timeout+tail-sec"
+ENGINE_PATCH_TAG = "drop-deadline+strict-apply+abs-timeout+tail-sec+no-drift"
 
 # ----------------- 유틸 -----------------
 def _fmt_hms(sec: float) -> str:
@@ -186,21 +187,13 @@ def run_batches(requests: List[Request], vehicles: List[VehicleState], P: Servic
                 pass
             return P2
 
-    # === 보강된 스케줄 적용: 정책하드가드 + 기존픽업ETA 악화금지 ===
+    # === 수정된 스케줄 적용: 각 요청의 개별 제약만 검사 (드리프트 금지 제거) ===
     def _sched_apply(v, decision, now_abs,
                      req_map, allowed_late, this_req_allowed_late,
                      P, osrm_obj) -> bool:
-        """무결성 + '기존 픽업 ETA 악화 금지' + '허용 지연 한도' 검사 후 적용"""
+        """무결성 + '각 요청의 허용 지연 한도만' 검사 후 적용"""
         before = _sched_snapshot(v)
         new_sched = decision.new_schedule
-
-        # (0) 기존 픽업 ETA baseline 계산 (현 스케줄 기준)
-        _, old_arrivals = _simulate_schedule(v, v.schedule, P, osrm_obj)
-        old_pick_eta = {}  # req_id -> 기존 픽업 ETA(절대시각)
-        cur_abs = float(now_abs)
-        for idx, s in enumerate(v.schedule):
-            if s.kind == "pickup":
-                old_pick_eta[s.req_id] = cur_abs + float(old_arrivals[idx])
 
         # (1) 기존 탑승자 drop 미손실 + 신규 pick/drop 존재
         for rid in list(v.onboard_reqs):
@@ -219,8 +212,10 @@ def run_batches(requests: List[Request], vehicles: List[VehicleState], P: Servic
         per_req_allow = dict(allowed_late)
         per_req_allow[decision.req_id] = float(this_req_allowed_late)
 
-        # (2-2) '픽업 ETA가 더 늦어지지 않는' 하드 가드 + 허용지연 하드 가드
+        # (2-2) 각 요청의 허용지연 범위만 검사 (드리프트 금지 로직 제거)
         SLACK = 1e-6  # 수치오차/서비스시간 보정용
+        cur_abs = float(now_abs)
+        
         for idx, s in enumerate(new_sched):
             if s.kind != "pickup":
                 continue
@@ -235,15 +230,9 @@ def run_batches(requests: List[Request], vehicles: List[VehicleState], P: Servic
                 getattr(P, "pickup_late_sec", getattr(P, "max_wait_sec", 900))
             ))
 
-            # (A) 정책 하드 가드: 요청+허용지연 이내여야 함
+            # 각 요청의 개별 제약만 검사: t_request + allowed_late 이내여야 함
             if eta_new > t_req + allow_late + SLACK:
                 return False
-
-            # (B) 드리프트 금지: 기존 대비 픽업 ETA가 늦어지면 거절 (신규는 제외)
-            if rid in old_pick_eta:
-                eta_old = float(old_pick_eta[rid])
-                if eta_new > eta_old + SLACK:
-                    return False
 
         # (3) 통과 시 적용
         v.schedule = new_sched
